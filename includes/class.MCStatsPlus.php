@@ -74,6 +74,7 @@ final class MCStatsPlus {
 	} 
 	
 	public function main() {
+		echo $_SERVER['REQUEST_URI'];
 		$users = $this->reg->plugin->get('user_list_all');
 		var_dump($users);
 	}
