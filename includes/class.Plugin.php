@@ -13,7 +13,7 @@ abstract class Plugin {
 	
 	}
 
-	abstract public function get($id = '');
+	abstract public function register();
 }
 
 ?>

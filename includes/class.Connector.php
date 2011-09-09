@@ -22,7 +22,7 @@ abstract class Connector {
 	public function load($action, $params = array()) {
 		$url = $this->host . ':' . $this->port . '/' . $action . '.' . $this->type;
 		
-		if ( count($params) > 0 ) {
+		if (count($params) > 0) {
 			$url .= '?';
 			
 			foreach ($params as $key => $value) {

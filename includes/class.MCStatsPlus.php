@@ -8,7 +8,18 @@ final class MCStatsPlus {
 		
 		$this->reg->app = $this;
 		
-		$this->init();
+		$this->reg->dbPrefix = '';
+		$this->reg->db = new DatabaseStandalone;
+		$this->reg->config = ConfigStandalone::instance();
+		
+		$this->setupInit();
+		$this->setupSystem();
+		
+		if ($this->reg->config->getConfig('MCSPConnectorType') == 'XML') {
+			$this->reg->connector = new ConnectorXML;
+		}
+		
+		$this->reg->plugin = PluginController::instance();
 	}
 		
 	public function __destruct() {
@@ -20,14 +31,14 @@ final class MCStatsPlus {
 	}
 
 	public static function instance() {
-		if ( ! isset(self::$instance) ) {
+		if (! isset(self::$instance)) {
 			self::$instance = new MCStatsPlus;
 		}
 
 		return self::$instance;
 	}
 	
-	protected function setup() {
+	protected function setupInit() {
 		$setupConfig = $this->reg->config->getConfig('MCSPSetup', 'false');
 		
 		if ($setupConfig != 'true') {
@@ -35,35 +46,35 @@ final class MCStatsPlus {
 			$this->reg->config->setConfig('MCSPConnectorPort', '9123');
 			$this->reg->config->setConfig('MCSPConnectorType', 'XML');
 			
+			$this->reg->config->setConfig('MCSPActivePlugins', 'Users,Economy,Stats,Achievements');
+			
+			$this->reg->config->setConfig('MCSPTimezone', '');
+			$this->reg->config->setConfig('MCSPLocale', '');
+			
+			$this->reg->config->setConfig('MCSPDebug', 'false');
+			
 			$this->reg->config->setConfig('MCSPSetup', 'true');
 		}
 	}
 	
-	protected function init() {
-		$this->reg->dbPrefix = '';
-		$this->reg->db = new DatabaseStandalone;
-		$this->reg->config = ConfigStandalone::instance();
+	protected function setupSystem() {
+		$timezone = $this->reg->config->getConfig('MCSPTimezone');
+		if (! empty($timezone)) {
+			date_default_timezone_set($timezone);
+		}
 		
-		$this->setup();
+		$locale = $this->reg->config->getConfig('MCSPLocale');
+		if (! empty($locale)) {
+			setlocale(LC_ALL, $locale);
+		}
 		
-		date_default_timezone_set('Europe/Berlin');
-		setlocale(LC_ALL, "de_DE");
-		
-		if (MCSP_DEBUG) {
+		if ($this->reg->config->getConfig('MCSPLocale') == 'true') {
 			error_reporting (E_ALL);
 		}
-		
-		
-		if ($this->reg->config->getConfig('MCSPConnectorType') == 'XML') {
-			$this->reg->connector = new ConnectorXML;
-		}
-	}
-
+	} 
+	
 	public function main() {
-		echo "Hallo Welt";
-		
-		$plugin = new PluginUsers;
-		$users = $plugin->get('users');
+		$users = $this->reg->plugin->get('user_list_all');
 		var_dump($users);
 	}
 }

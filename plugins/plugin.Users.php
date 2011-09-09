@@ -1,10 +1,18 @@
 <?php
 class PluginUsers extends Plugin {
-	public function get($id = '') {
-		return $this->getUsers();
+	protected $users;
+
+	public function register() {
+		return array(
+			'user_list_all' => 'getUserListAll'
+		);
 	}
 	
-	protected function getUsers() {
+	public function getUserListAll() {
+		if (isset($this->users)) {
+			return $this->users;
+		}
+	
 		$data = $this->c->load('users');
 		
 		$users = array();
@@ -19,6 +27,8 @@ class PluginUsers extends Plugin {
 	
 			usort($users, create_function('$a,$b', 'return strcasecmp($a["name"],$b["name"]);'));
 		}
+		
+		$this->users = $users;
 		
 		return $users;
 	}
