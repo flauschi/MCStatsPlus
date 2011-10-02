@@ -733,6 +733,7 @@ $cube = new Cube(new Point3D(0.5, -0.5, -0.5), 0.9, null, $texLapis);
 $img->addObject($cube);
 */
 
+
 $img = new RendererGd(32, 32);
 $cube = new Cube(new Point3D(-0.14, -0.14, -0.14), 0.28, null, $tex);
 $img->addObject($cube);

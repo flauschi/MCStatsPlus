@@ -1,6 +1,8 @@
 <?php
 class PluginUsers extends Plugin {
 	protected $users;
+	protected $info;
+
 
 	public function register() {
 		return array(
@@ -13,16 +15,13 @@ class PluginUsers extends Plugin {
 			return $this->users;
 		}
 	
-		$data = $this->c->load('users');
+		$data = $this->c->load('user_list');
 		
 		$users = array();
 		
-		if (isset($data->player)) {
-			foreach($data->player as $dataUser) {
-				$users[] = array(
-					'name' => (string)$dataUser['name'],
-					'status' => (string)$dataUser['status']
-				);
+		if (isset($data->users)) {
+			foreach($data->user as $dataUser) {
+				$users[] = $this->parseUser($dataUser);
 			}
 	
 			usort($users, create_function('$a,$b', 'return strcasecmp($a["name"],$b["name"]);'));
@@ -31,6 +30,20 @@ class PluginUsers extends Plugin {
 		$this->users = $users;
 		
 		return $users;
+	}
+	
+	public function parseUser($data) {
+		$user = array();
+		
+		if (! isset($data->name)) {
+			// Exception
+		}
+		
+		$user['name'] = (string)$data->name;
+		
+		$user['status'] = (isset($data['status'])) ? (string)$data['status']: 'unknown';
+		
+		return $user;
 	}
 }
 
